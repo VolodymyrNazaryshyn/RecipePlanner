@@ -11,15 +11,17 @@ namespace RecipePlanner.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly RecipeDatabaseContext _recipeDatabaseContext;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(RecipeDatabaseContext recipeDatabaseContext)
         {
-            _logger = logger;
+            _recipeDatabaseContext = recipeDatabaseContext;
         }
 
         public IActionResult Index()
         {
+            RecipeDatabaseContext recipeDatabaseContext = new RecipeDatabaseContext();
+            string str = _recipeDatabaseContext.Alergens.FirstOrDefault().Name.ToString();
             return View();
         }
 
