@@ -25,6 +25,7 @@ namespace RecipePlanner
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<RecipeDatabaseContext>(options => options.UseSqlServer(Configuration.GetConnectionString("recipeDb")));
+            services.AddDbContext<UserdbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("userDb")));
             services.AddControllersWithViews();
         }
 

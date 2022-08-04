@@ -1,0 +1,93 @@
+﻿@{
+    var err = ViewData["err"] as string[];
+}
+
+<head>
+	<link rel="stylesheet" href="~/css/LoginStyle.css">
+</head>
+
+<div class = "bodydiv">
+
+	<div class="container">
+		<div class="blueBg">
+			<div class="box signin">
+				<h2>Already Have an Account ?</h2>
+				<button class="signinBtn">Sign in</button>
+			</div>
+			<div class="box signup">
+				<h2>Don't Have an Account ?</h2>
+				<button class="signupBtn">Sign up</button>
+			</div>
+		</div>
+		<div class="formBx">
+			<div class="form signinForm">
+				<form action = "/Auth/Login" method = "post" enctype = "multipart/form-data">
+					<h3>Sign In</h3>
+					<input type="email" placeholder="Email">
+					<input type="password" placeholder="Password">
+					<div>
+						<input type="reset" value="Clear">
+						<input type="submit" value="Login">
+					</div>
+					<a href="#" class="forgot">Forgot Password</a>
+					<a href="menu.html" class="later">Maybe later (return to registration whenewer you want)</a>
+				</form>
+			</div>
+			<div class="form signupForm">
+				<form action = "/Auth/Register" method = "post" enctype = "multipart/form-data">
+					<h3>Sign Up</h3>
+					<input type="email" placeholder="Email" name = "Email">
+					<input type="password" placeholder="Password" name = "Password1">
+					<input type="password" placeholder="Confirm password" name = "Password2">
+					<input type="date" title="Date of birth" name = "BirthdayDate">
+					<div title="Choose your gender">
+						<input type="radio" value="male" name = "Gender"> Male
+						<input type="radio" value="female" name = "Gender"> Female
+						<input type="radio" value="other" name = "Gender"> Other
+					</div>
+					<select name = "Region">
+						<option value="none" hidden="">Choose region</option>
+						<option value="Europe">Europe</option>
+						<option value="America">America</option>
+						<option value="Africa">Africa</option>
+						<option value="Ausralia">Ausralia</option>
+						<option value="Asia">Asia</option>
+					</select>
+					<div class="buttons">
+						<input type="reset" value="Clear">
+						<input type="submit" value="Register">
+					</div>
+				</form>
+			</div>
+@*
+			@if(err?.Length > 0)
+			{
+				<script>
+					const formBx = document.querySelector('.formBx');
+					const body = document.querySelector('body');
+
+					formBx.classList.remove('active');
+					body.classList.remove('active');
+				</script>			
+			}*@
+
+		</div>
+	</div>
+	<script>
+		const signinBtn = document.querySelector('.signinBtn');
+		const signupBtn = document.querySelector('.signupBtn');
+		const formBx = document.querySelector('.formBx');
+		const body = document.querySelector('body');
+
+		signupBtn.onclick = function () {
+			formBx.classList.add('active');
+			body.classList.add('active');
+		}
+
+		signinBtn.onclick = function () {
+			formBx.classList.remove('active');
+			body.classList.remove('active');
+		}
+	</script>
+
+</div>
