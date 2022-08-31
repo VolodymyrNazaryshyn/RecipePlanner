@@ -1,5 +1,7 @@
 ﻿@{
-    var err = ViewData["err"] as string[];
+    var errors = ViewData["regErrors"] as String[];
+    var saveData = ViewData["saveData"] as String[];
+    var validData = ViewData["validData"] as String[];
 }
 
 <div class="container">
@@ -15,10 +17,10 @@
 	</div>
 	<div class="formBx">
 		<div class="form signinForm">
-			<form>
+			<form action="/Auth/Login" method="post" enctype="multipart/form-data">
 				<h3>Sign In</h3>
-				<input type="email" placeholder="Email">
-				<input type="password" placeholder="Password">
+				<input type="email" name="UserEmail" placeholder="Email">
+				<input type="password" name="UserPassword" placeholder="Password">
 				<div>
 					<input type="reset" value="Clear">
 					<input type="submit" value="Login">
@@ -28,25 +30,51 @@
 			</form>
 		</div>
 		<div class="form signupForm">
-			<form>
+			<form action="/Auth/Register" method="post" enctype="multipart/form-data">
 				<h3>Sign Up</h3>
-				<input type="email" placeholder="Email">
-				<input type="password" placeholder="Password">
-				<input type="password" placeholder="Confirm password">
-				<input type="date" title="Date of birth">
+				<input type="text" name="RealName" placeholder="RealName" value="@saveData?[0]">
+				@if(!String.IsNullOrEmpty(errors?[1]))
+					@errors[1]
+				else if(validData?[0] == false.ToString())
+					@errors[2]
+
+				<input type="email" name="Email" placeholder="Email" value="@saveData?[1]">
+				@if(!String.IsNullOrEmpty(errors?[3]))
+					@errors[3]
+				else if(validData?[1] == false.ToString())
+					@errors[4]
+
+				<input type="password" name="Password1" placeholder="Password">
+				@if(!String.IsNullOrEmpty(errors?[5]))
+					@errors[5]
+
+				<input type="password" name="Password2" placeholder="Confirm password">
+				@if(saveData?[2] != saveData?[3])
+					@errors[6]
+
+				<input type="date" name="BirthdayDate" title="Date of birth">
+				@if(!String.IsNullOrEmpty(errors?[7]))
+					@errors[7]
+
 				<div title="Choose your gender">
-					<input type="radio" value="male"> Male
-					<input type="radio" value="female"> Female
-					<input type="radio" value="other"> Other
+					<input type="radio" name="Gender" value="male"> Male
+					<input type="radio" name="Gender" value="female"> Female
+					<input type="radio" name="Gender" value="other"> Other
 				</div>
-				<select>
+				@if(!String.IsNullOrEmpty(errors?[8]))
+					@errors[8]
+
+				<select name="Region">
 					<option value="none" hidden="">Choose region</option>
-					<option value="1">Europe</option>
-					<option value="2">America</option>
-					<option value="3">Africa</option>
-					<option value="4">Ausralia</option>
-					<option value="5">Asia</option>
+					<option value="Europe">Europe</option>
+					<option value="America">America</option>
+					<option value="Africa">Africa</option>
+					<option value="Ausralia">Ausralia</option>
+					<option value="Asia">Asia</option>
 				</select>
+				@if(!String.IsNullOrEmpty(errors?[9]))
+					@errors[9]
+
 				<div class="buttons">
 					<input type="reset" value="Clear">
 					<input type="submit" value="Register">

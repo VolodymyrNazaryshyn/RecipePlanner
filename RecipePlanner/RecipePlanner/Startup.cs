@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RecipePlanner.Middleware;
+using RecipePlanner.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +29,18 @@ namespace RecipePlanner
             services.AddDbContext<RecipeDatabaseContext>(options => options.UseSqlServer(Configuration.GetConnectionString("recipeDb")));
             services.AddDbContext<UserdbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("userDb")));
             services.AddControllersWithViews();
+            services.AddSingleton<IHasher, Md5Hasher>();
+            services.AddScoped<IAuthService, SessionAuthService>();
+
+            #region Session
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = System.TimeSpan.FromHours(24);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,6 +62,10 @@ namespace RecipePlanner
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseSession();
+
+            app.UseSessionAuth();
 
             app.UseEndpoints(endpoints =>
             {

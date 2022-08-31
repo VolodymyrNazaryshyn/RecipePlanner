@@ -2,6 +2,8 @@
 
 namespace RecipePlanner.Models
 {
+    // модель для сбора данных из формы регистрации пользователя, имена
+    // свойств должны совпадать (до регистра) с именами полей формы
     public class RegUserModel
     {
         public string RealName { get; set; }
