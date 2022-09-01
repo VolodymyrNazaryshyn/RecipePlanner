@@ -104,7 +104,7 @@ namespace RecipePlanner.Controllers
             catch(Exception ex)
             {   // сюда мы попадаем если была ошибка
                 HttpContext.Session.SetString("LoginError", ex.Message);
-                return Redirect("/Auth/Index"); // завершаем обработку
+                return Redirect("/Auth/Register"); // завершаем обработку
             }
             // Если не было catch, то и не было ошибок
             // тогда user - авторизованный пользователь, сохраняем его данные в сессии (обычно ограничиваются id)
@@ -251,10 +251,103 @@ namespace RecipePlanner.Controllers
             if(_authService.User == null)
             {
                 // перенаправить на страницу логина
-                return Redirect("/Auth/Index");
+                return Redirect("/Auth/Register");
             }
 
             return View();
+        }
+
+        public String ChangeRealName(String NewName)
+        {
+            if(_authService.User == null) // если пользователь не авторизован
+            {
+                return "Unauthorized user"; // запрещенный доступ
+            }
+
+            if(String.IsNullOrEmpty(NewName)) // проверка на пустоту
+            {
+                return "Name couldn`t be empty!";
+            }
+            else if(!Regex.IsMatch(NewName, @"^[A-Z][a-z]+ [A-Z][a-z]+$")) // серверная валидация имени
+            {
+                return $"{NewName} doesn`t follow the pattern (example: Linus Torvalds)";
+            }
+            else // не было ошибок
+            {
+                // обновляем данные в БД
+                _authService.User.UserName = NewName;
+                _userContext.SaveChanges();
+                return "Name was updated!";
+            }
+        }
+
+        [HttpPut]
+        public JsonResult ChangeEmail([FromForm] String NewEmail)
+        {
+            String message = $"OK {NewEmail}";
+            if(_authService.User == null) // если пользователь не авторизован
+            {
+                message = "Unauthorized user"; // запрещенный доступ
+            }
+            else if(String.IsNullOrEmpty(NewEmail))
+            {
+                message = "Email couldn`t be empty";
+            }
+            else if(Regex.IsMatch(NewEmail, @"\s"))
+            {
+                message = "Email couldn`t contain space(s)";
+            }
+            else if(_userContext.Users.Where(u => u.Email == NewEmail).Count() > 0)
+            {
+                message = "Email in use";
+            }
+            else if(!Regex.IsMatch(NewEmail, @"^[A-z][A-z\d_]{3,16}@([a-z]{1,10}\.){1,5}[a-z]{2,3}$"))
+            {
+                message = NewEmail + @" doesn`t follow the pattern (example: volodimir@gmail.com, Alex@mail.odessa.ua)";
+            }
+
+            if(message == $"OK {NewEmail}") // не было ошибок
+            {
+                // обновляем данные в БД
+                _authService.User.Email = NewEmail;
+                _userContext.SaveChanges();
+            }
+
+            return Json(message);
+        }
+
+        [HttpPut]
+        public JsonResult ChangePassword([FromForm] String NewPassword)
+        {
+            String message = "OK";
+            if(_authService.User == null) // если пользователь не авторизован
+            {
+                message = "Unauthorized user"; // запрещенный доступ
+            }
+            else if(String.IsNullOrEmpty(NewPassword))
+            {
+                message = "Password couldn`t be empty";
+            }
+            else if(Regex.IsMatch(NewPassword, @"\s"))
+            {
+                message = "Password couldn`t contain space(s)";
+            }
+            else if(!Regex.IsMatch(NewPassword, @"(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*"))
+            {
+                message = "Password doesn`t follow the pattern: Minimum 8 characters, one digit, one uppercase letter and one lowercase letter";
+            }
+
+            if(message == "OK") // не было ошибок
+            {
+                // Хешируем введенный пароль + соль
+                String PassHash = _hasher.Hash(NewPassword + _authService.User.PassSalt);
+                // обновляем данные в БД
+                _authService.User.PassHash = PassHash;
+                _userContext.SaveChanges();
+                message = "Password was updated!";
+            }
+
+            return Json(message);
         }
     }
 }

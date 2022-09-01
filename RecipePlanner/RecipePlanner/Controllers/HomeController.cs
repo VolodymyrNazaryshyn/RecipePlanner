@@ -1,34 +1,55 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using RecipePlanner.Models;
-using System;
-using System.Collections.Generic;
+using RecipePlanner.Services;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace RecipePlanner.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly RecipeDatabaseContext _recipeDatabaseContext;
+        private readonly RecipeDatabaseContext _recipeDbContext;
+        private readonly UserdbContext _userContext;
+        private readonly IAuthService _authService;
 
-        public HomeController(RecipeDatabaseContext recipeDatabaseContext)
+        public HomeController( // Внедрение зависимостей через конструктор
+            RecipeDatabaseContext recipeDbContext,
+            UserdbContext userContext,
+            IAuthService authService)
         {
-            _recipeDatabaseContext = recipeDatabaseContext;
+            _recipeDbContext = recipeDbContext;
+            _userContext = userContext;
+            _authService = authService;
+        }
+
+        public override void OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext context)
+        {
+            ViewData["AuthUser"] = _authService.User;
+            // base.OnActionExecuting(context);
         }
 
         public IActionResult Index()
         {
-            RecipeDatabaseContext recipeDatabaseContext = new RecipeDatabaseContext();
-            string str = _recipeDatabaseContext.Alergens.FirstOrDefault().Name.ToString();
+            // проверяем службу авторизации
+            ViewData["authUserName"] = _authService.User?.UserName;
+            ViewData["UsersCount"] = _userContext.Users.Count();
+            ViewData["UsersRealName"] = _userContext.Users.Select(u => u.UserName).ToList();
+            // string str = _recipeDbContext.Alergens.FirstOrDefault().Name.ToString();
             return View();
         }
-
 
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        public ViewResult About()
+        {
+            var model = new Models.AboutModel
+            {
+                Data = "The Model Data"
+            };
+            return View(model);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -1,0 +1,47 @@
+﻿@{
+    var user = ViewData["AuthUser"] as User;
+}
+
+<h1>User Profile</h1>
+
+@if(user == null)
+{
+    <a href="/Auth">You must log in</a>
+}
+else
+{
+    <table>
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <td>
+                            <b>Real name:</b>
+                        </td>
+                        <td>
+                            <span id="userRealName" class="userInput">@user.UserName</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>Email:</b>
+                        </td>
+                        <td>
+                            <span id="userEmail" class="userInput">@user.Email</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>Password:</b>
+                        </td>
+                        <td>
+                            <span id="userPassword" class="userInput" style="width:110px; display:inline-block;">New password</span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+}
+
+<script src="/js/profile.js"></script>

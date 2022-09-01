@@ -2,6 +2,7 @@
     var errors = ViewData["regErrors"] as String[];
     var saveData = ViewData["saveData"] as String[];
     var validData = ViewData["validData"] as String[];
+	var user = ViewData["AuthUser"] as User;
 }
 
 <div class="container">
@@ -12,15 +13,20 @@
 		</div>
 		<div class="box signup">
 			<h2>Don't Have an Account ?</h2>
-			<button class="signupBtn">Sign up</button>
+			<button class="signupBtn" onclick="location='/Auth/Register'">Sign up</button>
 		</div>
 	</div>
 	<div class="formBx">
 		<div class="form signinForm">
-			<form action="/Auth/Login" method="post" enctype="multipart/form-data">
+			<form action="/Auth/Login" method="post" enctype="application/x-www-form-urlencoded">
 				<h3>Sign In</h3>
 				<input type="email" name="UserEmail" placeholder="Email">
 				<input type="password" name="UserPassword" placeholder="Password">
+				@if(user == null)
+				{
+					@ViewData["LoginError"]
+				}
+				
 				<div>
 					<input type="reset" value="Clear">
 					<input type="submit" value="Login">
@@ -30,7 +36,7 @@
 			</form>
 		</div>
 		<div class="form signupForm">
-			<form action="/Auth/Register" method="post" enctype="multipart/form-data">
+			<form action="/Auth/RegUser" method="post" enctype="multipart/form-data">
 				<h3>Sign Up</h3>
 				<input type="text" name="RealName" placeholder="RealName" value="@saveData?[0]">
 				@if(!String.IsNullOrEmpty(errors?[1]))
@@ -83,19 +89,3 @@
 		</div>
 	</div>
 </div>
-	<script>
-		const signinBtn = document.querySelector('.signinBtn');
-		const signupBtn = document.querySelector('.signupBtn');
-		const formBx = document.querySelector('.formBx');
-		const body = document.querySelector('body');
-
-		signupBtn.onclick = function () {
-			formBx.classList.add('active');
-			body.classList.add('active');
-		}
-
-		signinBtn.onclick = function () {
-			formBx.classList.remove('active');
-			body.classList.remove('active');
-		}
-	</script>

@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var user = ViewData["AuthUser"] as User;
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -27,9 +31,29 @@
                          <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About</a>
                         </li>                      
-                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Register">Log In</a>
-                        </li>               
+
+                        <li class="nav-item">
+                            @if(user == null)
+                            {
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Register">Log in</a>
+                            }
+                            else
+                            {
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Profile">
+                                    <b id="realNameHeader">@user.UserName</b>
+                                </a>
+                            }
+                        </li>
+
+                        @if(user != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Logout">
+                                    <img src='/img/appImg/logout.png' style='max-height:1.4em' />
+                                </a>
+                            </li>
+                        }
+
                     </ul>
                 </div>
             </div>
